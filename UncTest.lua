@@ -7,7 +7,7 @@ local REQUIRED = {
     ["getgenv"] = true,
     ["request"] = true,
     ["gethui"] = true,
-    ["WebSocket.connect"] = true,
+  --  ["WebSocket.connect"] = true,
 }
 
 local STOP_ON_REQUIRED_FAIL = true

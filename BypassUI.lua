@@ -3,7 +3,7 @@ local CoreGui = game:GetService("CoreGui")
 local Genv = getgenv and getgenv() or _G
 if Genv.Xenith and typeof(Genv.Xenith) == "Instance" then
     pcall(function()
-        Genv.BypassUI.lua:Destroy()
+        Genv.Xenith.lua:Destroy()
     end)
 
 end

@@ -7,6 +7,7 @@ local REQUIRED = {
     ["getgenv"] = true,
     ["request"] = true,
     ["gethui"] = true,
+    ["WebSocket.connect"] = true,
 }
 
 local STOP_ON_REQUIRED_FAIL = true
@@ -784,7 +785,7 @@ test("setthreadidentity", {"setidentity", "setthreadcontext"}, function()
     assert(getthreadidentity() == 3, "Did not set the thread identity")
 end)
 
--- Drawing
+
 
 test("Drawing", {})
 

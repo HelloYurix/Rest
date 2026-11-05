@@ -3,7 +3,7 @@ local CoreGui = game:GetService("CoreGui")
 local Genv = getgenv and getgenv() or _G
 if Genv.Xenith and typeof(Genv.Xenith) == "Instance" then
     pcall(function()
-        Genv.Xenith.lua:Destroy()
+        Genv.Xenith:Destroy()
     end)
 
 end
@@ -26,6 +26,7 @@ local function protectAndHideUI(gui)
         gui.Parent = gethui()
     else
       return 
+    end
 end
 
 protectAndHideUI(ScreenGui)

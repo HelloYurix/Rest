@@ -1,4 +1,6 @@
 
+
+    local NameUi = "มึงหากูไม่เจอหรอกค้าบ"
     local Service = {
         CoreGui = game:GetService("CoreGui")
     }
@@ -12,7 +14,7 @@
     end
 
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "Xenith000"
+    ScreenGui.Name = NameUi
     ScreenGui.ResetOnSpawn = false
     ScreenGui.IgnoreGuiInset = true
 

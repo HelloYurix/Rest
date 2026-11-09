@@ -1,6 +1,14 @@
-local CoreGui = game:GetService("CoreGui")
+if Token ~= "9f3a1c7be24d5086Yurixa1f7c3e9b0d24a68" then
+    warn("Token No")
+    return
+end
 
-local Genv = getgenv and getgenv() or _G
+local Service = {
+    CoreGui = game:GetService("CoreGui")
+}
+
+local CoreGui = Service.CoreGui
+local Genv = getgenv()
 if Genv.Xenith and typeof(Genv.Xenith) == "Instance" then
     pcall(function()
         Genv.Xenith:Destroy()
@@ -16,7 +24,7 @@ ScreenGui.IgnoreGuiInset = true
 
 Genv.Xenith = ScreenGui
 
-local ProtectedCoreGui = (cloneref and cloneref(CoreGui)) or CoreGui
+local ProtectedCoreGui =  CoreGui
 
 local function protectAndHideUI(gui)
     if syn and syn.protect_gui then
@@ -31,5 +39,5 @@ end
 
 protectAndHideUI(ScreenGui)
 
-return ScreenGui
+return ScreenGui 
 

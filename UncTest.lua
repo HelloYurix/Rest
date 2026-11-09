@@ -1,9 +1,5 @@
 
-return function(Token)
-if Token ~= "9f3a1c7be24d5086Yurixa1f7c3e9b0d24a68" then
-        warn("Token No")
-        return nil 
-    end
+
 
 local passes, fails, undefined = 0, 0, 0
 local running = 0
@@ -884,4 +880,4 @@ end
 
 return true
 
-end
+

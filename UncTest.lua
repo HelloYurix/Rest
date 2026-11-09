@@ -8,12 +8,16 @@ local REQUIRED = {
     ["readfile"] = true,
 }
 
-local passes, fails, undefined = 0, 0, 0
-local running = 0
 
 local Service = {
     HttpService = game:GetService("HttpService")
 }
+
+
+
+local passes, fails, undefined = 0, 0, 0
+local running = 0
+
 
 local HttpService = Service.HttpService
 

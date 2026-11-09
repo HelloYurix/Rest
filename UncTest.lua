@@ -1,6 +1,6 @@
 
 return function(Token)
-    if Token ~= "9f3a1c7be24d5086Yurixa1f7c3e9b0d24a68" then
+if Token ~= "9f3a1c7be24d5086Yurixa1f7c3e9b0d24a68" then
         warn("Token No")
         return nil 
     end

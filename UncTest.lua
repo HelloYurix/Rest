@@ -1,13 +1,19 @@
 local passes, fails, undefined = 0, 0, 0
 local running = 0
 
+
+local Service = {
+    HttpService = game:GetService("HttpService")
+}
+
+local HttpService = Service.HttpService
 local REQUIRED = {
     ["loadstring"] = true,
-    ["hookfunction"] = true,
     ["getgenv"] = true,
     ["request"] = true,
     ["gethui"] = true,
-    --["WebSocket.connect"] = true,
+    ["writefile"] = true,
+    ["readfile"] = true,
 }
 
 local STOP_ON_REQUIRED_FAIL = true
@@ -37,7 +43,7 @@ local function getGlobal(path)
 end
 
 local function test(name, aliases, callback)
-    if halted then return end -- หยุดแล้ว ไม่รันตัวถัดไป
+    if halted then return end 
 
     running += 1
 
@@ -48,7 +54,6 @@ local function test(name, aliases, callback)
         end
 
         if not callback then
-            -- ไม่มีเทส ข้ามเงียบๆ
         elseif not getGlobal(name) then
             onFail(name)
         else
@@ -65,7 +70,6 @@ local function test(name, aliases, callback)
     end)
 end
 
--- Cache
 
 test("cache.invalidate", {}, function()
     local container = Instance.new("Folder")
@@ -103,7 +107,6 @@ test("compareinstances", {}, function()
     assert(compareinstances(part, clone), "Clone should be equal to original when using compareinstances()")
 end)
 
--- Closures
 
 local function shallowEqual(t1, t2)
     if t1 == t2 then
@@ -268,7 +271,7 @@ test("crypt.hash", {}, function()
     end
 end)
 
---- Debug
+
 
 test("debug.getconstant", {}, function()
     local function test()
@@ -404,86 +407,94 @@ end)
 
 
 if isfolder and makefolder and delfolder then
-    if isfolder(".tests") then
-        delfolder(".tests")
+    if isfolder("XenithData") then
+        delfolder("XenithData")
     end
-    makefolder(".tests")
+    makefolder("XenithData")
 end
 
 test("readfile", {}, function()
-    writefile(".tests/readfile.txt", "success")
-    assert(readfile(".tests/readfile.txt") == "success", "Did not return the contents of the file")
+    local jsonData = HttpService:JSONEncode({status = "success"})
+    writefile("XenithData/readfile.json", jsonData)
+    local decoded = HttpService:JSONDecode(readfile("XenithData/readfile.json"))
+    assert(decoded.status == "success", "Did not return the contents of the file")
 end)
 
 test("listfiles", {}, function()
-    makefolder(".tests/listfiles")
-    writefile(".tests/listfiles/test_1.txt", "success")
-    writefile(".tests/listfiles/test_2.txt", "success")
-    local files = listfiles(".tests/listfiles")
+    makefolder("XenithData/listfiles")
+    writefile("XenithData/listfiles/test_1.json", HttpService:JSONEncode({status = "success"}))
+    writefile("XenithData/listfiles/test_2.json", HttpService:JSONEncode({status = "success"}))
+    local files = listfiles("XenithData/listfiles")
     assert(#files == 2, "Did not return the correct number of files")
     assert(isfile(files[1]), "Did not return a file path")
-    assert(readfile(files[1]) == "success", "Did not return the correct files")
-    makefolder(".tests/listfiles_2")
-    makefolder(".tests/listfiles_2/test_1")
-    makefolder(".tests/listfiles_2/test_2")
-    local folders = listfiles(".tests/listfiles_2")
+    local decoded = HttpService:JSONDecode(readfile(files[1]))
+    assert(decoded.status == "success", "Did not return the correct files")
+    makefolder("XenithData/listfiles_2")
+    makefolder("XenithData/listfiles_2/test_1")
+    makefolder("XenithData/listfiles_2/test_2")
+    local folders = listfiles("XenithData/listfiles_2")
     assert(#folders == 2, "Did not return the correct number of folders")
     assert(isfolder(folders[1]), "Did not return a folder path")
 end)
 
 test("writefile", {}, function()
-    writefile(".tests/writefile.txt", "success")
-    assert(readfile(".tests/writefile.txt") == "success", "Did not write the file")
-    local requiresFileExt = pcall(function()
-        writefile(".tests/writefile", "success")
-        assert(isfile(".tests/writefile.txt"))
+    local Data = { status = "success" }
+    local Success, Error = pcall(function()
+        return HttpService:JSONEncode(Data)
     end)
-    if not requiresFileExt then
-        return "This executor requires a file extension in writefile"
+
+    if Success then
+        if not isfolder("XenithData") then
+            makefolder("XenithData")
+        end
+        writefile("XenithData/writefile.json", Error)
+    else
+        return
     end
 end)
 
-test("makefolder", {}, function()
-    makefolder(".tests/makefolder")
-    assert(isfolder(".tests/makefolder"), "Did not create the folder")
-end)
+test("makefolder", {}, function() 
+    makefolder("XenithData/makefolder") 
+    assert(isfolder("XenithData/makefolder"), "Did not create the folder") 
+end) 
 
-test("appendfile", {}, function()
-    writefile(".tests/appendfile.txt", "su")
-    appendfile(".tests/appendfile.txt", "cce")
-    appendfile(".tests/appendfile.txt", "ss")
-    assert(readfile(".tests/appendfile.txt") == "success", "Did not append the file")
-end)
+test("appendfile", {}, function() 
+    writefile("XenithData/appendfile.json", '{"status":"suc') 
+    appendfile("XenithData/appendfile.json", 'ce') 
+    appendfile("XenithData/appendfile.json", 'ss"}') 
+    local decoded = HttpService:JSONDecode(readfile("XenithData/appendfile.json"))
+    assert(decoded.status == "success", "Did not append the file") 
+end) 
 
-test("isfile", {}, function()
-    writefile(".tests/isfile.txt", "success")
-    assert(isfile(".tests/isfile.txt") == true, "Did not return true for a file")
-    assert(isfile(".tests") == false, "Did not return false for a folder")
-    assert(isfile(".tests/doesnotexist.exe") == false, "Did not return false for a nonexistent path (got " .. tostring(isfile(".tests/doesnotexist.exe")) .. ")")
-end)
+test("isfile", {}, function() 
+    writefile("XenithData/isfile.json", HttpService:JSONEncode({status = "success"})) 
+    assert(isfile("XenithData/isfile.json") == true, "Did not return true for a file") 
+    assert(isfile("XenithData") == false, "Did not return false for a folder")
+    assert(isfile("XenithData/doesnotexist.exe") == false, "Did not return false for a nonexistent path (got " .. tostring(isfile("XenithData/doesnotexist.exe")) .. ")") 
+end) 
 
-test("isfolder", {}, function()
-    assert(isfolder(".tests") == true, "Did not return false for a folder")
-    assert(isfolder(".tests/doesnotexist.exe") == false, "Did not return false for a nonexistent path (got " .. tostring(isfolder(".tests/doesnotexist.exe")) .. ")")
-end)
+test("isfolder", {}, function() 
+    assert(isfolder("XenithData") == true, "Did not return false for a folder") 
+    assert(isfolder("XenithData/doesnotexist.exe") == false, "Did not return false for a nonexistent path (got " .. tostring(isfolder("XenithData/doesnotexist.exe")) .. ")") 
+end) 
 
 test("delfolder", {}, function()
-    makefolder(".tests/delfolder")
-    delfolder(".tests/delfolder")
-    assert(isfolder(".tests/delfolder") == false, "Failed to delete folder (isfolder = " .. tostring(isfolder(".tests/delfolder")) .. ")")
+    makefolder("XenithData/delfolder") 
+    delfolder("XenithData/delfolder") 
+    assert(isfolder("XenithData/delfolder") == false, "Failed to delete folder (isfolder = " .. tostring(isfolder("XenithData/delfolder")) .. ")") 
 end)
 
 test("delfile", {}, function()
-    writefile(".tests/delfile.txt", "Hello, world!")
-    delfile(".tests/delfile.txt")
-    assert(isfile(".tests/delfile.txt") == false, "Failed to delete file (isfile = " .. tostring(isfile(".tests/delfile.txt")) .. ")")
+    writefile("XenithData/delfile.json", HttpService:JSONEncode({status = "success"}))
+    delfile("XenithData/delfile.json")
+    assert(isfile("XenithData/delfile.json") == false, "Failed to delete file (isfile = " .. tostring(isfile("XenithData/delfile.json")) .. ")")
 end)
 
 test("loadfile", {}, function()
-    writefile(".tests/loadfile.txt", "return ... + 1")
-    assert(assert(loadfile(".tests/loadfile.txt"))(1) == 2, "Failed to load a file with arguments")
-    writefile(".tests/loadfile.txt", "f")
-    local callback, err = loadfile(".tests/loadfile.txt")
+    writefile("XenithData/loadfile.txt", "return ... + 1")
+    assert(assert(loadfile("XenithData/loadfile.txt"))(1) == 2, "Failed to load a file with arguments")
+    writefile("XenithData/loadfile.txt", "f")
+    local callback, err = loadfile("XenithData/loadfile.txt")
     assert(err and not callback, "Did not return an error message for a compiler error")
 end)
 
@@ -550,8 +561,8 @@ test("getconnections", {}, function()
 end)
 
 test("getcustomasset", {}, function()
-    writefile(".tests/getcustomasset.txt", "success")
-    local contentId = getcustomasset(".tests/getcustomasset.txt")
+    writefile("XenithData/getcustomasset.json", HttpService:JSONEncode({status = "success"}))
+    local contentId = getcustomasset("XenithData/getcustomasset.json")
     assert(type(contentId) == "string", "Did not return a string")
     assert(#contentId > 0, "Returned an empty string")
     assert(string.match(contentId, "rbxasset://") == "rbxasset://", "Did not return an rbxasset url")
@@ -596,7 +607,7 @@ test("setscriptable", {}, function()
     assert(wasScriptable == false, "Did not return false for a non-scriptable property (size_xml)")
     assert(isscriptable(fire, "size_xml") == true, "Did not set the scriptable property")
     fire = Instance.new("Fire")
-    assert(isscriptable(fire, "size_xml") == false, "⚠️⚠️ setscriptable persists between unique instances ⚠️⚠️")
+    assert(isscriptable(fire, "size_xml") == false, "setscriptable persists between unique instances")
 end)
 
 test("setrbxclipboard", {})

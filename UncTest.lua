@@ -1,6 +1,12 @@
+
+return function(Token)
+    if Token ~= "9f3a1c7be24d5086Yurixa1f7c3e9b0d24a68" then
+        warn("Token No")
+        return nil 
+    end
+
 local passes, fails, undefined = 0, 0, 0
 local running = 0
-
 
 local Service = {
     HttpService = game:GetService("HttpService")
@@ -607,7 +613,7 @@ test("setscriptable", {}, function()
     assert(wasScriptable == false, "Did not return false for a non-scriptable property (size_xml)")
     assert(isscriptable(fire, "size_xml") == true, "Did not set the scriptable property")
     fire = Instance.new("Fire")
-    assert(isscriptable(fire, "size_xml") == false, "setscriptable persists between unique instances")
+    assert(isscriptable(fire, "size_xml") == false, "⚠️⚠️ setscriptable persists between unique instances ⚠️⚠️")
 end)
 
 test("setrbxclipboard", {})
@@ -877,3 +883,5 @@ if #failedRequired > 0 then
 end
 
 return true
+
+end

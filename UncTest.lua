@@ -1,5 +1,12 @@
 
-
+local REQUIRED = {
+    ["loadstring"] = true,
+    ["getgenv"] = true,
+    ["request"] = true,
+    ["gethui"] = true,
+    ["writefile"] = true,
+    ["readfile"] = true,
+}
 
 local passes, fails, undefined = 0, 0, 0
 local running = 0
@@ -9,14 +16,7 @@ local Service = {
 }
 
 local HttpService = Service.HttpService
-local REQUIRED = {
-    ["loadstring"] = true,
-    ["getgenv"] = true,
-    ["request"] = true,
-    ["gethui"] = true,
-    ["writefile"] = true,
-    ["readfile"] = true,
-}
+
 
 local STOP_ON_REQUIRED_FAIL = true
 local halted = false
